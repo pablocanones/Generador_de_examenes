@@ -10,6 +10,13 @@ dificultad = de 1 a 5
 
 
 #ejercicio para calcular el mínimo común múltiplo y el máximo común divisor
+
+'''
+ORDENAR LOS NÚMEROS PARA IDENTIFICAR REPETIDOS
+'''
+
+
+
 def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
     if seed:
         random.seed(seed)
