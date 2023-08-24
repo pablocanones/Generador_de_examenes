@@ -1,0 +1,11 @@
+\documentclass[a4paper,12pt]{article}
+
+%Fuente
+\usepackage{kpfonts}
+\usepackage[T1]{fontenc}
+%Paquetes
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenx}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{tasks}
