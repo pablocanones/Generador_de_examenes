@@ -31,9 +31,12 @@ def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
     #basado en el nivel de dificultad, creamos un conjunto de primos disponibles
     primos = primos[:max(2,int(len(primos)*math.log(dificultad,5)))]
     for _ in range(n):
+        #cantidad de factores no comunes
+        max_factor = 6*dificultad//5
+        #cantidad de factores comunes
+        max_comunes = random.randint(0,max_factor//2)
         #factores comunes a los dos
         comunes = []
-        max_comunes = random.randint(0,int(2*math.log(dificultad,5)))
         print('max_comunes',max_comunes)
         while len(comunes) < max_comunes:
             p = random.choice(primos)
@@ -45,7 +48,7 @@ def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
         #factores no comunes
         no_comun1 = []
         no_comun2 = []
-        max_factor = 2*dificultad/5
+        
         while min(len(no_comun1),len(no_comun2)) < max_factor:
             p = random.choice(primos)
             #no permitir primos grandes repetidos
@@ -139,5 +142,7 @@ def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
     enunciado += '\\end{tasks}'
     solucion += '\\end{tasks}'
     return enunciado,solucion
+
+
 if __name__ == '__main__':
     mcd_mcm(n=5,debug=True)

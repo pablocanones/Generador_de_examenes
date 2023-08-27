@@ -35,7 +35,10 @@ class Documento():
                     os.remove(fichero)
 
 if __name__ == '__main__':
+    '''
     doc = Documento('prueba')
     doc.ejercicio('Enteros.mcd_mcm',n=4)
     doc.cerrar()
     doc.compilar()
+    '''
+    Enteros.mcd_mcm(n=5,debug=True)
