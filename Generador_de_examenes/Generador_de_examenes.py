@@ -37,8 +37,8 @@ class Documento():
 if __name__ == '__main__':
     '''
     doc = Documento('prueba')
-    doc.ejercicio('Enteros.mcd_mcm',n=4)
+    doc.ejercicio('Enteros.mcd_mcm',n=5)
     doc.cerrar()
     doc.compilar()
     '''
-    Enteros.mcd_mcm(n=5,debug=True)
+    #Enteros.mcd_mcm(n=5,debug=True,dificultad=3)

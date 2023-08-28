@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Generador_de_examenes</Name>
     <RootNamespace>Generador_de_examenes</RootNamespace>
+    <IsWindowsApplication>True</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
