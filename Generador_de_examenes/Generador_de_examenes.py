@@ -22,7 +22,7 @@ class Documento():
     def ejercicio(self,funcion,n = 1, seed = None, dificultad = 3):
         self.contenido += '\\begin{ejercicio}'
         self.solucion += '\\begin{ejercicio}'
-        enunciado,solucion = eval(funcion)(n,seed,dificultad)
+        enunciado,solucion,resumen = eval(funcion)(n,seed,dificultad)
         self.contenido += enunciado
         self.solucion += solucion
         self.contenido += '\\end{ejercicio}'
@@ -31,7 +31,7 @@ class Documento():
     def problema(self,funcion,fijo = False, seed = None, dificultad = 3):
         self.contenido += '\\begin{ejercicio}'
         self.solucion += '\\begin{ejercicio}'
-        enunciado,solucion = eval(funcion)(fijo,seed,dificultad)
+        enunciado,solucion,resumen = eval(funcion)(fijo,seed,dificultad)
         self.contenido += enunciado
         self.solucion += solucion
         self.contenido += '\\end{ejercicio}'

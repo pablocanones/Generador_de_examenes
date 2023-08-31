@@ -131,7 +131,7 @@ def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
                 else:
                     solucion += f' {i}^{k}'
         #solución
-        solucion += f'$.\n\nmcd$({num1},{num2})'
+        solucion += f'$.\n\nMCD$({num1},{num2})'
         primero = True
         if len(comunes)>0:
             solucion+=' = '
@@ -170,7 +170,7 @@ def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
      
     enunciado += '\\end{tasks}'
     solucion += '\\end{tasks}'
-    return enunciado,solucion
+    return enunciado,solucion,generados
 
 '''
 ejercicio para calcular el mínimo común múltiplo y el máximo común divisor de 3 números
@@ -316,7 +316,7 @@ def mcd_mcm_3(n = 1, seed = None, dificultad = 3,debug = False):
                 else:
                     solucion += f' {i}^{k}'
         #solución
-        solucion += f'$.\n\nmcd$({num1},{num2},{num3})'
+        solucion += f'$.\n\nMCD$({num1},{num2},{num3})'
         primero = True
         if len(comunes)>0:
             solucion+=' = '
@@ -356,7 +356,7 @@ def mcd_mcm_3(n = 1, seed = None, dificultad = 3,debug = False):
      
     enunciado += '\\end{tasks}'
     solucion += '\\end{tasks}'
-    return enunciado,solucion
+    return enunciado,solucion,generados
 
 '''
 problema de mínimos comunes múltiplos
@@ -543,4 +543,200 @@ def Problema_mcm(fijo = False, seed = None, dificultad = 3,debug = False):
     if debug:
         print(f'{num1} {factor1}, {num2} {factor2}. MCD: {math.gcd(num1,num2)}, mcm: {math.lcm(num1,num2)}')
      
-    return enunciado,solucion
+    return enunciado,solucion,[num1,num2]
+
+'''
+ejercicio para calcular b dado a, mcm(a,b) y mcd(a,b)
+n: Cantidad de apartados.
+seed: semilla para la generación aleatoria
+dificultad: entre 1 y 5
+debug: para ver la factorización de los números
+
+La función genera dos números con unos cuantos factores y otros no comunes.
+La cantidad de no comunes puede ser cero
+Puede usar tantos 2, 3, 5 como quiera pero sólo un 7, 11, 13
+La dificultad incrementa la cantidad de primos disponibles y la cantidad de factores en los números.
+'''
+def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
+    if seed:
+        random.seed(seed)
+    
+    primos = [2,3,5,7,11,13]
+    #basado en el nivel de dificultad, creamos un conjunto de primos disponibles
+    primos = primos[:max(2,int(len(primos)*math.log(dificultad,5)))]
+
+    #cantidad de factores totales
+    max_factor = 6*dificultad//5
+    #cantidad de factores comunes
+    max_comunes = math.ceil(random.randint(0,(max_factor-1)*3)/3)
+    #restar la cantidad de comunes
+    max_factor -= max(1,max_comunes)
+    #factores comunes a los dos
+    comunes = []
+    primo_grande = False
+    while len(comunes) < max_comunes:
+        p = random.choice(primos)
+        #sólo permitir un primo mayor o igual a 7
+        if p in primos[3:]:
+            primo_grande = True
+            if p in comunes:
+                continue
+        else:
+            comunes.append(p)
+    #factores no comunes
+    no_comun1 = []
+    no_comun2 = []
+    #posibilidad de desviación en la cantidad de factores en uno de los números
+    desviacion = random.randint(0,1)
+        
+    while min(len(no_comun1)-desviacion,len(no_comun2)) < max_factor:
+        p = random.choice(primos)
+        #sólo permitir un primo mayor o igual a 7
+        if p in primos[3:]:
+            if primo_grande:#si hay un primo grande en los comunes
+                continue
+            primo_grande = True
+        #si el factor ya ha salido y los números no son demasiado grandes
+        if p in no_comun1 and len(no_comun1)-desviacion< max_factor:
+            no_comun1.append(p)
+        elif p in no_comun2 and len(no_comun2)< max_factor:
+            no_comun2.append(p)
+        #si no ha salido para ninguno
+        elif p not in no_comun1 and p not in no_comun2:
+            #dárselo al que tiene menos longitud
+            if len(no_comun1)<=len(no_comun2):
+                no_comun1.append(p)
+            else:
+                no_comun2.append(p)
+
+    #fabricar los dos números
+    if len(comunes) == 0 :
+        num1 = reduce(mul, no_comun1)
+        num2 = reduce(mul, no_comun2)
+    else:
+        num1 = reduce(mul, comunes)*reduce(mul, no_comun1)
+        num2 = reduce(mul, comunes)*reduce(mul, no_comun2)
+    
+    #fabricar el enunciado
+    enunciado = f'Tenemos un número $a={num1}$ y uno $b$ desconocido. '+\
+            f'De estos dos números sabemos que MCD$(a,b)={math.gcd(num1,num2)}$ y '+\
+            f'y que que mcm$(a,b)={math.lcm(num1,num2)}$. Calcula el valor de $b$.'
+
+    #fabricar solución
+    solucion = 'Para encontrar $b$ vamos a factorizar $a$, MCD$(a,b)$ y mcm$(a,b)$.\n\\begin{itemize}\n'
+    #primer número
+    factor1 = no_comun1 + comunes
+    solucion += f'\\item $a={num1}='
+    primero = True
+    for i in primos:
+        k = factor1.count(i)
+        if k > 0:
+            if primero:
+                primero = False
+            else:
+                solucion += ' \cdot'
+            if k == 1:
+                solucion += f' {i}'
+            else:
+                solucion += f' {i}^{k}'
+    solucion += '$.\n'
+    #mcd
+    solucion += f'\\item MCD$(a,b) = {math.gcd(num1,num2)} = '
+    primero = True
+    if len(comunes)==0:
+        solucion+='1'
+    if len(comunes)==1:
+        solucion+=f'{comunes[0]}'
+    else:
+        for i in primos:
+            k = comunes.count(i)
+            if k > 0:
+                if primero:
+                    primero = False
+                else:
+                    solucion += ' \cdot'
+                if k == 1:
+                    solucion += f' {i}'
+                else:
+                    solucion += f' {i}^{k}'
+    solucion += '$.\n'
+    #mcm
+    solucion += f'\\item mcm$({num1},{num2}) = '
+    todos = comunes + no_comun1 + no_comun2
+    primero = True
+    for i in primos:
+        k = todos.count(i)
+        if k > 0:
+            if primero:
+                primero = False
+            else:
+                solucion += ' \cdot'
+            if k == 1:
+                solucion += f' {i}'
+            else:
+                solucion += f' {i}^{k}'        
+    solucion += f' = {math.lcm(num1,num2)}$.\n\\end{{itemize}}\n'
+
+    solucion += 
+
+    #segundo número
+    factor2 = no_comun2 + comunes
+    solucion += f'$.\n\n ${num2}='
+    primero = True
+    for i in primos:
+        k = factor2.count(i)
+        if k > 0:
+            if primero:
+                primero = False
+            else:
+                solucion += ' \cdot'
+            if k == 1:
+                solucion += f' {i}'
+            else:
+                solucion += f' {i}^{k}'
+    #solución
+    solucion += f'$.\n\nmcd$({num1},{num2})'
+    primero = True
+    if len(comunes)>0:
+        solucion+=' = '
+    if len(comunes)==1:
+        solucion+=f'{comunes[0]}$.\n\n'
+    else:
+        for i in primos:
+            k = comunes.count(i)
+            if k > 0:
+                if primero:
+                    primero = False
+                else:
+                    solucion += ' \cdot'
+                if k == 1:
+                    solucion += f' {i}'
+                else:
+                    solucion += f' {i}^{k}'
+        solucion += f' ={math.gcd(num1,num2)}$.\n\n'
+    solucion += f'mcm$({num1},{num2}) = '
+    todos = comunes + no_comun1+no_comun2
+    primero = True
+    for i in primos:
+        k = todos.count(i)
+        if k > 0:
+            if primero:
+                primero = False
+            else:
+                solucion += ' \cdot'
+            if k == 1:
+                solucion += f' {i}'
+            else:
+                solucion += f' {i}^{k}'        
+    solucion += f' = {math.lcm(num1,num2)}$.\n'
+
+    solucion += 'Otra manera de encontrar $b$ es usar la propiedad $\text{MCD}(a,b)\cdot\text{mcm}(a,b)=a\cdot b. Entonces '+\
+                '$$b = \frac\text{MCD}(a,b)\cdot\text{mcm}(a,b)}{a}='+\
+                f'\frac{{ {math.gcd(num1,num2)} \cdot {math.lcm(num1,num2)} }}{{ {num1} }}'+\
+                f'=\frac{{ {num1*num2} }}{{ {num1} }} = {num1}.$$'
+    if debug:
+        print(f'{num1} {factor1}, {num2} {factor2}. MCD: {math.gcd(num1,num2)}, mcm: {math.lcm(num1,num2)}')
+     
+    enunciado += '\\end{tasks}'
+    solucion += '\\end{tasks}'
+    return enunciado,solucion,generados
