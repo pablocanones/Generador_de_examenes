@@ -7,5 +7,9 @@
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenx}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{enumitem}
 \usepackage{tasks}
+
+\theoremstyle{definition}
+\newtheorem{ejercicio}{}

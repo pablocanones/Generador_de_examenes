@@ -20,9 +20,22 @@ class Documento():
             data.write(self.solucion)
 
     def ejercicio(self,funcion,n = 1, seed = None, dificultad = 3):
+        self.contenido += '\\begin{ejercicio}'
+        self.solucion += '\\begin{ejercicio}'
         enunciado,solucion = eval(funcion)(n,seed,dificultad)
         self.contenido += enunciado
         self.solucion += solucion
+        self.contenido += '\\end{ejercicio}'
+        self.solucion += '\\end{ejercicio}'
+
+    def problema(self,funcion,fijo = False, seed = None, dificultad = 3):
+        self.contenido += '\\begin{ejercicio}'
+        self.solucion += '\\begin{ejercicio}'
+        enunciado,solucion = eval(funcion)(fijo,seed,dificultad)
+        self.contenido += enunciado
+        self.solucion += solucion
+        self.contenido += '\\end{ejercicio}'
+        self.solucion += '\\end{ejercicio}'
 
     def compilar(self):
         os.system(f'pdflatex {self.nombre}.tex')
@@ -35,10 +48,11 @@ class Documento():
                     os.remove(fichero)
 
 if __name__ == '__main__':
-    '''
+    
     doc = Documento('prueba')
-    doc.ejercicio('Enteros.mcd_mcm',n=5)
+    for i in range(7):
+        doc.problema('Enteros.Problema_mcm')
     doc.cerrar()
     doc.compilar()
-    '''
-    #Enteros.mcd_mcm(n=5,debug=True,dificultad=3)
+    
+    #Enteros.mcm_problema(debug=True,dificultad=3)
