@@ -19,19 +19,19 @@ class Documento():
         with codecs.open(f'{self.nombre}_solucion.tex','w','utf-8') as data:
             data.write(self.solucion)
 
-    def ejercicio(self,funcion,n = 1, seed = None, dificultad = 3):
+    def ejercicio(self,funcion,n = 1, seed = None, dificultad = 3, debug = False):
         self.contenido += '\\begin{ejercicio}'
         self.solucion += '\\begin{ejercicio}'
-        enunciado,solucion,resumen = eval(funcion)(n,seed,dificultad)
+        enunciado,solucion,resumen = eval(funcion)(n,seed,dificultad,debug)
         self.contenido += enunciado
         self.solucion += solucion
         self.contenido += '\\end{ejercicio}'
         self.solucion += '\\end{ejercicio}'
 
-    def problema(self,funcion,fijo = False, seed = None, dificultad = 3):
+    def problema(self,funcion,fijo = False, seed = None, dificultad = 3, debug = False):
         self.contenido += '\\begin{ejercicio}'
         self.solucion += '\\begin{ejercicio}'
-        enunciado,solucion,resumen = eval(funcion)(fijo,seed,dificultad)
+        enunciado,solucion,resumen = eval(funcion)(fijo,seed,dificultad,debug)
         self.contenido += enunciado
         self.solucion += solucion
         self.contenido += '\\end{ejercicio}'
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     
     doc = Documento('prueba')
     for i in range(7):
-        doc.problema('Enteros.Problema_mcm')
+        doc.problema('Enteros.Problema_mcd')
     doc.cerrar()
     doc.compilar()
     
