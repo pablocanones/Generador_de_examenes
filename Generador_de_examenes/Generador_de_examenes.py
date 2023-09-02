@@ -50,9 +50,10 @@ class Documento():
 if __name__ == '__main__':
     
     doc = Documento('prueba')
-    for i in range(7):
-        doc.problema('Enteros.Problema_mcd')
+    for i in range(1):
+        #doc.problema('Enteros.Problema_mcd')
+        doc.ejercicio('Enteros.factorizar',n=8)
     doc.cerrar()
     doc.compilar()
     
-    #Enteros.mcm_problema(debug=True,dificultad=3)
+    #Enteros.factorizar(n=8,debug=True,dificultad=3)

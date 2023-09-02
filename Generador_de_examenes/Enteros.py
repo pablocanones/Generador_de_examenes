@@ -2,12 +2,81 @@ import random
 from operator import mul
 from functools import reduce
 import math
-import datetime
+
 '''
-n = cantidad de apartados en el ejercicio
-seed = semilla aleatoria
-dificultad = de 1 a 5
+ejercicio para calcular el mínimo común múltiplo y el máximo común divisor de 2 números
+n: Cantidad de apartados.
+seed: semilla para la generación aleatoria
+dificultad: entre 1 y 5
+debug: para ver la factorización de los números
+
+La función genera dos números con unos cuantos factores y otros no comunes.
+La cantidad de no comunes puede ser cero
+Puede usar tantos 2, 3, 5 como quiera pero sólo un 7, 11, 13
+La dificultad incrementa la cantidad de primos disponibles y la cantidad de factores en los números.
 '''
+def factorizar(n = 1, seed = None, dificultad = 3,debug = False):
+    if seed:
+        random.seed(seed)
+    enunciado = 'Factoriza los siguientes números:\n'
+    solucion = enunciado
+    enunciado += '\\begin{tasks}(4)\n'
+    solucion += '\\begin{tasks}\n'
+    
+    
+    primos = [2,3,5,7,11,13]
+    #basado en el nivel de dificultad, creamos un conjunto de primos disponibles
+    primos = primos[:max(2,int(len(primos)*math.log(dificultad,5)))]
+    generados = []
+    apartado = 0
+    while apartado < n:
+        #cantidad de factores totales
+        max_factor = 10*dificultad//5
+        #factores no comunes
+        factores = []
+        
+        while len(factores) < max_factor:
+            p = random.choice(primos)
+            #permitir un sólo 7, 11, 13
+            if p in primos[3:] and p in factores:
+                continue
+            else:
+                factores.append(p)
+
+        #fabricar el número
+        num = reduce(mul,factores)
+        
+        #comprobar que no se han generado los mismos de antes
+        if num in generados:
+            continue
+        else:
+            generados.append(num)
+            apartado+=1
+
+        #fabricar el enunciado
+        enunciado += f'\\task ${num}$.\n'
+        
+        #fabricar solución
+        solucion += f'\\task ${num}='
+        primero = True
+        for i in primos:
+            k = factores.count(i)
+            if k > 0:
+                if primero:
+                    primero = False
+                else:
+                    solucion += ' \cdot'
+                if k == 1:
+                    solucion += f' {i}'
+                else:
+                    solucion += f' {i}^{k}'
+        solucion += '$.\n'
+        if debug:
+            print(f'{num} {factores}')
+     
+    enunciado += '\\end{tasks}'
+    solucion += '\\end{tasks}'
+    return enunciado,solucion,generados
 
 '''
 ejercicio para calcular el mínimo común múltiplo y el máximo común divisor de 2 números
@@ -58,10 +127,8 @@ def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
         #factores no comunes
         no_comun1 = []
         no_comun2 = []
-        #posibilidad de desviación en la cantidad de factores en uno de los números
-        desviacion = random.randint(0,1)
         
-        while min(len(no_comun1)-desviacion,len(no_comun2)) < max_factor:
+        while min(len(no_comun1),len(no_comun2)) < max_factor:
             p = random.choice(primos)
             #sólo permitir un primo mayor o igual a 7
             if p in primos[3:]:
@@ -69,7 +136,7 @@ def mcd_mcm(n = 1, seed = None, dificultad = 3,debug = False):
                     continue
                 primo_grande = True
             #si el factor ya ha salido y los números no son demasiado grandes
-            if p in no_comun1 and len(no_comun1)-desviacion< max_factor:
+            if p in no_comun1 and len(no_comun1)< max_factor:
                 no_comun1.append(p)
             elif p in no_comun2 and len(no_comun2)< max_factor:
                 no_comun2.append(p)
@@ -222,10 +289,8 @@ def mcd_mcm_3(n = 1, seed = None, dificultad = 3,debug = False):
         no_comun1 = []
         no_comun2 = []
         no_comun3 = []
-        #posibilidad de desviación en la cantidad de factores en uno de los números
-        desviacion = random.randint(0,1)
         
-        while min(len(no_comun1)-desviacion,len(no_comun2),len(no_comun3)) < max_factor:
+        while min(len(no_comun1),len(no_comun2),len(no_comun3)) < max_factor:
             p = random.choice(primos)
             #sólo permitir un primo mayor o igual a 7
             if p in primos[3:]:
@@ -233,7 +298,7 @@ def mcd_mcm_3(n = 1, seed = None, dificultad = 3,debug = False):
                     continue
                 primo_grande = True
             #si el factor ya ha salido y los números no son demasiado grandes
-            if p in no_comun1 and len(no_comun1)-desviacion< max_factor:
+            if p in no_comun1 and len(no_comun1)< max_factor:
                 no_comun1.append(p)
             elif p in no_comun2 and len(no_comun2)< max_factor:
                 no_comun2.append(p)
@@ -431,9 +496,9 @@ def Problema_mcm(fijo = False, seed = None, dificultad = 3,debug = False):
     #fabricar el enunciado
     n_enunciados = 5
     if fijo:
-        tipo = datetime.date.today().toordinal() % n_enunciados
+        tipo = 0
     else:
-        tipo = random.randint(0,n_enunciados-1)
+        tipo = random.randint(1,n_enunciados-1)
 
     if tipo == 0:
         enunciado = 'Alicia y Bob están corriendo un circuito circular por la montaña. '+\
@@ -791,9 +856,9 @@ def Problema_mcd(fijo = False, seed = None, dificultad = 3,debug = False):
     #fabricar el enunciado
     n_enunciados = 3
     if fijo:
-        tipo = datetime.date.today().toordinal() % n_enunciados
+        tipo = 0
     else:
-        tipo = random.randint(0,n_enunciados-1)
+        tipo = random.randint(1,n_enunciados-1)
 
     if tipo == 0:
         enunciado = 'Estamos colocando baldosas en una habitación de dimensiones '+\
