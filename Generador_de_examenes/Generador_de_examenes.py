@@ -48,12 +48,14 @@ class Documento():
                     os.remove(fichero)
 
 if __name__ == '__main__':
-    
+    '''
     doc = Documento('prueba')
     for i in range(1):
         #doc.problema('Enteros.Problema_mcd')
         doc.ejercicio('Enteros.factorizar',n=8)
     doc.cerrar()
     doc.compilar()
-    
-    #Enteros.factorizar(n=8,debug=True,dificultad=3)
+    '''
+    Enteros.orden_operaciones(n=8,debug=True,dificultad=3)
+    #print(Enteros.limpiador(['(',6,'x','(',4,'x',3,')',')']))
+    #print(Enteros.limpiador(['(','(',4,'+',3,')','x',6,')']))

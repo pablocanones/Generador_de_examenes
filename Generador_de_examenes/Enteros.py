@@ -2,16 +2,127 @@ import random
 from operator import mul
 from functools import reduce
 import math
+from copy import deepcopy
+
+def operacion_derecha(expresion,i):
+    while i<len(expresion) and expresion[i] not in ['+','-','*',':','(']:
+            i += 1
+    if i==len(expresion):
+        return None
+    else:
+        return expresion[i]
+
+def operacion_izquierda(expresion,i):
+    while i>=0 and expresion[i] not in ['+','-','*',':',')']:
+            i -= 1
+    if i<0:
+        return None
+    else:
+        return expresion[i]
+
+#función para maquetar los paréntesis y poner los puntos de multiplicación
+#def traduccion_latex(expresion):
+    
 
 '''
-ejercicio para calcular el mínimo común múltiplo y el máximo común divisor de 2 números
+Ejercicio para practicar el orden de las operaciones
+n: Cantidad de apartados.
+seed: semilla para la generación aleatoria
+dificultad: entre 1 y 5
+'''
+def orden_operaciones(n = 1, seed = None, dificultad = 3,debug = False):
+    enunciado = 'Simplifica las siguientes expresiones:\n'
+    enunciado += '\\begin{tasks}(3)\n'
+    generados = []
+    apartado = 0
+    while apartado < n:
+        #Elegir un número al azar para empezar
+        expresion = [(1 if random.random()>dificultad/15 else -1) * random.randint(3,4*dificultad)]
+        for k in range(dificultad+2):
+            #elegir aleatoriamente un número de la expresion
+            while True:
+                p = random.randint(0,len(expresion)-1)
+                if type(expresion[p]) == int:
+                    break
+            #tomar el número
+            i = expresion[p]
+            #Elegir una operación
+            #si i es primo, no se puede expresar como multiplicación
+            if len([d for d in range(2,i) if i%d==0]) == 0:
+                if abs(i) > 20: #si es demasiado grande
+                    op = '+'
+                elif abs(i) <= 3: #si es demasiado pequeño
+                    op = random.choice(['-',':'])
+                else:
+                    op = random.choice(['+','-',':'])
+            else:
+                if abs(i) > 20: #si es demasiado grande
+                    op = random.choice(['+','*','*'])
+                elif abs(i) <= 3: #si es demasiado pequeño
+                    op = random.choice(['-',':'])
+                else:
+                    op = random.choice(['+','-','*','*','*',':'])
+
+            #expresar i como la operación de dos números
+            if op == '+':
+                j = random.randint(2,i-2) if i>0 else random.randint(i+2,-2)
+                #distinguir cuándo hay que poner paréntesis
+                if operacion_izquierda(expresion,p) in ['+','(',None] and operacion_derecha(expresion,p) in ['+','-',')',None]:
+                    operacion =[i-j,'+',j]
+                else:
+                    operacion =['(',i-j,'+',j,')']
+            elif op == '-':
+                j = random.randint(2,7) if i>0 else random.randint(-7,-2)
+                #distinguir cuándo hay que poner paréntesis
+                if operacion_izquierda(expresion,p) in ['+','(',None] and operacion_derecha(expresion,p) in ['+','-',')',None]:
+                    operacion =[i+j,'-',j]
+                else:
+                    operacion =['(',i+j,'-',j,')']
+            elif op == '*':
+                #escoger un divisor aleatorio
+                j = (1 if random.random()>dificultad/15 else -1) * random.choice([d for d in range(2,i) if i%d==0])
+                #distinguir cuándo hay que poner paréntesis
+                if operacion_izquierda(expresion,p) in ['+','-','*','(',None]:
+                    operacion = [i//j,'*',j]
+                else:
+                    operacion = ['(',i//j,'*',j,')']
+            else:#op == ':'
+                j = (1 if random.random()>dificultad/15 else -1) * random.randint(2,max(3,dificultad+1))
+                if operacion_izquierda(expresion,p) in ['+','-','(',None] and operacion_derecha(expresion,p) in ['+','-',')',None]:
+                    operacion = [i*j,':',j] 
+                else:
+                    operacion = ['(',i*j,':',j,')']
+            #sustituir número por su expresión
+            del expresion[p]
+            expresion[p:p] = operacion
+            if debug:
+                salida = ''.join(list(map(str,expresion)))
+                print(salida)
+        #Recorrer la expresión y añadir paréntesis alrededor de los negativos y quitar multiplicaciones innecesarias
+        p = 0
+        while p <len(expresion):
+            if type(expresion[p]) == int and expresion[p]<0:
+                if expresion[p-1] != '(':
+                    expresion[p:p] = ['(',expresion.pop(p),')']
+                    p += 2
+            elif expresion[p] == '*' and ( expresion[p-1] == '(' or expresion[p-1] == ')'):
+                del expresion[p]
+                p -= 1
+            p += 1
+
+        if debug:
+            salida = ''.join(list(map(str,expresion)))
+            print(salida)
+        apartado+=1
+
+'''
+ejercicio para factorizar un número
 n: Cantidad de apartados.
 seed: semilla para la generación aleatoria
 dificultad: entre 1 y 5
 debug: para ver la factorización de los números
 
-La función genera dos números con unos cuantos factores y otros no comunes.
-La cantidad de no comunes puede ser cero
+La función genera un número a factorizar.
 Puede usar tantos 2, 3, 5 como quiera pero sólo un 7, 11, 13
 La dificultad incrementa la cantidad de primos disponibles y la cantidad de factores en los números.
 '''
