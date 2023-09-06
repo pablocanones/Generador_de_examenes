@@ -21,8 +21,113 @@ def operacion_izquierda(expresion,i):
         return expresion[i]
 
 #función para maquetar los paréntesis y poner los puntos de multiplicación
-#def traduccion_latex(expresion):
-    
+def traduccion_latex(expresion):
+    #Recorrer la expresión y añadir paréntesis alrededor de los negativos y quitar multiplicaciones innecesarias
+    p = 0
+    while p <len(expresion):
+        if type(expresion[p]) == int and expresion[p]<0:
+            if expresion[p-1] != '(':
+                expresion[p:p] = ['(',expresion.pop(p),')']
+                p += 2
+        elif expresion[p] == '*' and ( expresion[p+1] == '(' or expresion[p-1] == ')'):
+            del expresion[p]
+            p -= 1
+        p += 1
+
+    #orden de los paréntesis
+    paren_i = ['(','[','\\big(','\\big[','\\bigg(','\\bigg[','\\Big(','\\Big[','\\Bigg(','\\Bigg[']
+    paren_d = [')',']','\\big)','\\big]','\\bigg)','\\bigg]','\\Big)','\\Big]','\\Bigg)','\\Bigg]']
+
+    #calcular la profundidad máxima de los paréntesis:
+    profundidad = 0
+    prof_max = 0
+    j = 0
+    for i in range(len(expresion)):
+        if expresion[i] =='(':
+            profundidad += 1
+            if profundidad > prof_max:
+                prof_max = profundidad
+        elif expresion[i] == ')':
+            profundidad -= 1
+        elif expresion[i] == '*':
+            expresion[i] = '\\cdot '
+        
+        #si se ha encontrado un juego de paréntesis que abre y cierra del todo
+        if profundidad == 0 and prof_max > 0:
+            #cambiar los paréntesis de ese juego
+            for k in range(j,i+1):
+                if expresion[k] =='(':
+                    profundidad += 1
+                    expresion[k] = paren_i[prof_max-profundidad] 
+                elif expresion[k] == ')':
+                    expresion[k] = paren_d[prof_max-profundidad]
+                    profundidad -= 1
+            j = i+1
+            prof_max = 0
+
+    return expresion
+
+#función para simplificar una expresión algebraica
+def simplificar(expresion):
+    #primero simplificar cambios de signo
+    flag = False
+    for i in range(len(expresion)):
+        if expresion[i] == '-' and type(expresion[i+1])==int and expresion[i+1]<0:
+            expresion[i] = '+'
+            expresion[i+1] *= -1
+            flag = True
+        elif expresion[i] == '+' and type(expresion[i+1])==int and expresion[i+1]<0:
+            expresion[i] = '-'
+            expresion[i+1] *= -1
+            flag = True
+    if flag:
+        return expresion
+    #después buscar el paréntesis más profundo
+    i = 0
+    for j in range(len(expresion)):
+        if expresion[j] =='(':
+            i = j+1
+        elif expresion[j] == ')':
+            break
+    #el fragmento expresion[i:j+1] sólo son números operaciones
+    #en este fragmento, buscar la operación más prioritaria
+    try:
+        k = expresion.index('*',i,j)
+        if j-i == 3:
+            expresion[k-2:k+3] = [ expresion[k-1] * expresion[k+1] ]
+        else:
+            expresion[k-1:k+2] = [ expresion[k-1] * expresion[k+1] ]
+        return expresion
+    except ValueError:
+        pass
+
+    try:
+        k = expresion.index(':',i,j)
+        if j-i == 3:
+            expresion[k-2:k+3] = [ expresion[k-1] // expresion[k+1] ]
+        else:
+            expresion[k-1:k+2] = [ expresion[k-1] // expresion[k+1] ]
+        return expresion
+    except ValueError:
+        pass
+
+    try:
+        k = expresion.index('+',i,j)
+        if j-i == 3:
+            expresion[k-2:k+3] = [ expresion[k-1] + expresion[k+1] ]
+        else:
+            expresion[k-1:k+2] = [ expresion[k-1] + expresion[k+1] ]
+        return expresion
+    except ValueError:
+        pass
+
+    k = expresion.index('-',i,j)
+    if j-i == 3:
+        expresion[k-2:k+3] = [ expresion[k-1] - expresion[k+1] ]
+    else:
+        expresion[k-1:k+2] = [ expresion[k-1] - expresion[k+1] ]
+    return expresion
+
 
 '''
 Ejercicio para practicar el orden de las operaciones
@@ -32,13 +137,15 @@ dificultad: entre 1 y 5
 '''
 def orden_operaciones(n = 1, seed = None, dificultad = 3,debug = False):
     enunciado = 'Simplifica las siguientes expresiones:\n'
-    enunciado += '\\begin{tasks}(3)\n'
+    solucion = enunciado
+    enunciado += '\\begin{tasks}\n'
+    solucion += '\\begin{tasks}\n'
     generados = []
     apartado = 0
     while apartado < n:
         #Elegir un número al azar para empezar
-        expresion = [(1 if random.random()>dificultad/15 else -1) * random.randint(3,4*dificultad)]
-        for k in range(dificultad+2):
+        expresion = [(1 if random.random()>dificultad/15 else -1) * random.randint(6,4*dificultad+4)]
+        for k in range(dificultad+3):
             #elegir aleatoriamente un número de la expresion
             while True:
                 p = random.randint(0,len(expresion)-1)
@@ -52,16 +159,16 @@ def orden_operaciones(n = 1, seed = None, dificultad = 3,debug = False):
                 if abs(i) > 20: #si es demasiado grande
                     op = '+'
                 elif abs(i) <= 3: #si es demasiado pequeño
-                    op = random.choice(['-',':'])
+                    op = random.choice(['-',':',':'])
                 else:
-                    op = random.choice(['+','-',':'])
+                    op = random.choice(['+','-',':',':'])
             else:
                 if abs(i) > 20: #si es demasiado grande
                     op = random.choice(['+','*','*'])
                 elif abs(i) <= 3: #si es demasiado pequeño
-                    op = random.choice(['-',':'])
+                    op = random.choice(['-',':',':'])
                 else:
-                    op = random.choice(['+','-','*','*','*',':'])
+                    op = random.choice(['+','-','*','*','*',':',':'])
 
             #expresar i como la operación de dos números
             if op == '+':
@@ -98,22 +205,73 @@ def orden_operaciones(n = 1, seed = None, dificultad = 3,debug = False):
             if debug:
                 salida = ''.join(list(map(str,expresion)))
                 print(salida)
-        #Recorrer la expresión y añadir paréntesis alrededor de los negativos y quitar multiplicaciones innecesarias
-        p = 0
-        while p <len(expresion):
-            if type(expresion[p]) == int and expresion[p]<0:
-                if expresion[p-1] != '(':
-                    expresion[p:p] = ['(',expresion.pop(p),')']
-                    p += 2
-            elif expresion[p] == '*' and ( expresion[p-1] == '(' or expresion[p-1] == ')'):
-                del expresion[p]
-                p -= 1
-            p += 1
+        
+        enunciado += '\\task $'+''.join(list(map(str,traduccion_latex(expresion[:]))))+'$.\n'
+        solucion += '\\task $ '+''.join(list(map(str,traduccion_latex(expresion[:]))))+'$\n\n'
 
-        if debug:
-            salida = ''.join(list(map(str,expresion)))
-            print(salida)
+        while len(expresion) > 1:
+            expresion = simplificar(expresion)
+            solucion += '$ =' + ''.join(list(map(str,traduccion_latex(expresion[:]))))+'$\n\n'
+
         apartado+=1
+    enunciado += '\\end{tasks}'
+    solucion += '\\end{tasks}'
+    return enunciado,solucion,None
+
+def numeros_recta(n = 1, seed = None, dificultad = 3,debug = False):
+    #elegir la separación entre las marcas
+    sep = random.randint(2,max(2,dificultad*2-1))
+    #elegir el número de marcas que aparecen en la recta
+    marcas = random.randint(10,15)
+    #elegir la posición de los dos números y las 4 letras
+    while True:
+        posiciones = random.sample(list(range(marcas)), 6)
+        #asegurarse de que los dos números están lo bastante separados
+        if abs(posiciones[0]-posiciones[1]) >= 5:
+            break
+    #ordenar las dos primeras
+    posiciones[0:2]= sorted(posiciones[0:2])
+    #elegir los valores de los dos datos
+    d1 = random.randint(-(posiciones[1]-posiciones[0])*sep//2,-3)
+    d2 = d1+(posiciones[1]-posiciones[0])*sep
+    datos = [d1,d2,'A','B','C','D']
+    if debug:
+        print(posiciones)
+        print(datos)
+
+    enunciado = '\n\n\\noindent \\begin{tikzpicture}\n\\begin{axis} [height = 7em, width=1.12\\textwidth, axis line style={draw=none}, '+\
+                 'tick style={draw=none}, xtick=\\empty, ytick=\\empty, xmin=-0.02, xmax=1.02]'
+    enunciado += f'\n\\addplot [domain= 0:1, samples={marcas}, mark=|]{{0}};'
+    for i in range(6):
+        enunciado += f'\n\\node at (axis cs: {posiciones[i]/(marcas-1)} ,0) [anchor=north] {{ {datos[i]} }};'
+    enunciado += '\n\\end{axis}\n\\end{tikzpicture}'
+    solucion = enunciado
+    enunciado = 'Si las marcas de la recta están igualmente espaciadas, ¿qué números se corresponden con las letras A, B, C, D?' + enunciado
+
+    solucion = 'Lo primero que debemos averiguar es cuánto miden la distancia entre marcas. Para eso utilizamos los dos números dados.\n\n ' + solucion
+    solucion += f'\n\nLos números dados {datos[0]} y {datos[1]} están separados {posiciones[1]-posiciones[0]} marcas y su diferencia real es '+\
+                f'${datos[1]}-({datos[0]})={datos[1]-datos[0]}$. Entonces, si {posiciones[1]-posiciones[0]} marcas cubren '+\
+                f'una distancia de {datos[1]-datos[0]}, el espacio entre dos marcas mide ${datos[1]-datos[0]}:{posiciones[1]-posiciones[0]} = {sep}$.'
+    solucion += '\n\nCon esto podemos sacar el valor de las cuatro letras:\n\\begin{itemize}'
+    for i in range(2,6):
+        solucion += f'\n\\item {datos[i]} está a {abs(posiciones[i]-posiciones[1])} marca'
+        if abs(posiciones[i]-posiciones[1])>1:
+            solucion += 's'
+        solucion += ' hacia la '
+        if posiciones[i]-posiciones[1]>0:
+            solucion += 'derecha '
+        else:
+            solucion += 'izquierda '
+        solucion += f'de {datos[1]}. Como la distancia entre dos marcas es {sep}, '
+        solucion += f'{datos[i]} $= {datos[1]} '
+        if posiciones[i]-posiciones[1]>0:
+            solucion += ' + '
+        solucion += f'{posiciones[i]-posiciones[1]}\cdot {sep}={datos[1]} '
+        if posiciones[i]-posiciones[1]>0:
+            solucion += ' + '
+        solucion += f'{(posiciones[i]-posiciones[1])*sep} = {datos[1]+(posiciones[i]-posiciones[1])*sep}$.'
+    solucion+= '\n\\end{itemize}'
+    return enunciado,solucion,None
 
 '''
 ejercicio para factorizar un número
@@ -965,7 +1123,7 @@ def Problema_mcd(fijo = False, seed = None, dificultad = 3,debug = False):
         num2 = reduce(mul, comunes)*reduce(mul, no_comun2)
 
     #fabricar el enunciado
-    n_enunciados = 3
+    n_enunciados = 5
     if fijo:
         tipo = 0
     else:
@@ -976,22 +1134,41 @@ def Problema_mcd(fijo = False, seed = None, dificultad = 3,debug = False):
                     f'{num1} por {num2} metros. Si queremos coger las baldosas cuadradas lo más grandes posibles, '+\
                     '¿qué tamaño de baldosa debemos coger?'
         solucion = 'El tamaño de la baldosa tiene que satisfacer que, cuando pongamos suficientes a lo largo y a lo ancho, '+\
-                   'cubra de pared a pared de la habitación. Necesitamos encontrar un número que sea divisor de '+\
+                   'cubra de pared a pared de la habitación. Esto es, debe ser un divisor de la longitud de ambas paredes. '+\
+                   'Necesitamos encontrar un número que sea divisor de '+\
                    f'{num1} y de {num2} y además lo más grande posible. Ese número es el máximo común divisor.\n\n'
     elif tipo == 1:
         enunciado = f'Tenemos {num1} lápices y {num2} rotuladores. Con ellos queremos hacer paquetes, '+\
                     'cada uno con o bien lápices o bien rotuladores, de tal manera que cada paquete tenga el mismo '+\
                     'número de objetos, esta cantidad sea máxima y no nos queden objetos sueltos. '+\
                     '¿Cuántos lápices o rotuladores hay que poner en cada paquete?'
-        solucion = 'La cantidad de objetos en los paquetes tiene que satisfacer que usemos todos los objetos y tiene que ser la misma en todos. '+\
-                   'Necesitamos encontrar un número que sea divisor de '+\
+        solucion = 'La cantidad de objetos en los paquetes tiene que satisfacer que usemos todos los objetos, con lo que la cantidad '+\
+                    'debe ser un divisor del número de objetos. Además, esta cantidad tiene que ser la misma en todos. '+\
+                   'Entonces, necesitamos encontrar un número que sea divisor de '+\
                    f'{num1} y de {num2} y además lo más grande posible. Ese número es el máximo común divisor.\n\n'
     elif tipo == 2:
         enunciado = f'Tenemos dos cuerdas, una de {num1} metros y otra de {num2} metros. '+\
                     'Queremos cortarlas en trozos de manera que todos los trozos sean iguales y midan lo más largo posible. '+\
                     '¿Cuánto tienen que medir estos trozos?'
-        solucion = 'La longitud de los trozos tiene que satisfacer que cubramos con ellos las dos longitudes de las cuerdas. '+\
+        solucion = 'La longitud de los trozos tiene que satisfacer que cubramos con ellos las dos longitudes de las cuerdas, '+\
+                   'esto es, debe ser un divisor de la longitud de ambas cuerdas. '+\
                    'Necesitamos encontrar un número que sea divisor de '+\
+                   f'{num1} y de {num2} y además lo más grande posible. Ese número es el máximo común divisor.\n\n'
+    elif tipo == 3:
+        enunciado = f'Un ebanista quiere cortar una plancha de {num1} dm de largo y {num2} de ancho, en '+\
+                    'cuadrados lo más grandes posibles y cuyo lado sea un número entero de decímetros'+\
+                    '¿Cuánto debe ser la longitud del lado?'
+        solucion = 'La longitud del lado debe satisfacer que, cuando pongamos suficientes a lo largo y a lo ancho, '+\
+                   'cubra la plancha entera. Esto es, debe ser un divisor de de ambas longitudes. '+\
+                   'Necesitamos encontrar un número que sea divisor de '+\
+                   f'{num1} y de {num2} y además lo más grande posible. Ese número es el máximo común divisor.\n\n'
+    elif tipo == 4:
+        enunciado = f'Tenemos {num1} bolas blancas y {num2} bolas negras. Queremos hacer montones de bolas del mismo color '+\
+                    'de manera que todos los montones sean iguales y tengan la mayor cantidad de bolas posible posible. '+\
+                    '¿Cuántas bolas deben tener los montones?'
+        solucion = 'La cantidad de bolas en los montones debe satisfacer que usemos todas, con lo que la cantidad '+\
+                   'debe ser un divisor del número de bolas. Además, esta cantidad debe ser la misma en todos '+\
+                   'Entonces, necesitamos encontrar un número que sea divisor de '+\
                    f'{num1} y de {num2} y además lo más grande posible. Ese número es el máximo común divisor.\n\n'
     enunciado += '\n\nArgumenta adecuadamente por qué tu solución es correcta.'
 
@@ -1048,6 +1225,10 @@ def Problema_mcd(fijo = False, seed = None, dificultad = 3,debug = False):
         solucion += f'Cada paquete debe tener ${math.gcd(num1,num2)}$ lápices o bolígrafos.'
     elif tipo == 2:
         solucion += f'Cada trozo debe medir ${math.gcd(num1,num2)}$ metros.'
+    elif tipo == 3:
+        solucion += f'La longitud del lado debe ser ${math.gcd(num1,num2)}$ decímetros.'
+    elif tipo == 4:
+        solucion += f'Cada montón debe tener ${math.gcd(num1,num2)}$ bolas.'
 
     if debug:
         print(f'{num1} {factor1}, {num2} {factor2}. MCD: {math.gcd(num1,num2)}, mcm: {math.lcm(num1,num2)}')

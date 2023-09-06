@@ -10,6 +10,8 @@
 \usepackage{amsthm}
 \usepackage{enumitem}
 \usepackage{tasks}
+\usepackage{tikz} 
+\usepackage{pgfplots}
 
 \theoremstyle{definition}
 \newtheorem{ejercicio}{}

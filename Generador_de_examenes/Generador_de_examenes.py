@@ -20,42 +20,57 @@ class Documento():
             data.write(self.solucion)
 
     def ejercicio(self,funcion,n = 1, seed = None, dificultad = 3, debug = False):
-        self.contenido += '\\begin{ejercicio}'
-        self.solucion += '\\begin{ejercicio}'
+        self.contenido += '\n\\begin{ejercicio}'
+        self.solucion += '\n\\begin{ejercicio}'
         enunciado,solucion,resumen = eval(funcion)(n,seed,dificultad,debug)
         self.contenido += enunciado
         self.solucion += solucion
-        self.contenido += '\\end{ejercicio}'
-        self.solucion += '\\end{ejercicio}'
+        self.contenido += '\n\\end{ejercicio}'
+        self.solucion += '\n\\end{ejercicio}'
 
     def problema(self,funcion,fijo = False, seed = None, dificultad = 3, debug = False):
-        self.contenido += '\\begin{ejercicio}'
-        self.solucion += '\\begin{ejercicio}'
+        self.contenido += '\n\\begin{ejercicio}'
+        self.solucion += '\n\\begin{ejercicio}'
         enunciado,solucion,resumen = eval(funcion)(fijo,seed,dificultad,debug)
         self.contenido += enunciado
         self.solucion += solucion
-        self.contenido += '\\end{ejercicio}'
-        self.solucion += '\\end{ejercicio}'
+        self.contenido += '\n\\end{ejercicio}'
+        self.solucion += '\n\\end{ejercicio}'
 
-    def compilar(self):
+    def compilar(self,debug = False):
         os.system(f'pdflatex {self.nombre}.tex')
         os.system(f'pdflatex {self.nombre}_solucion.tex')
         
-        #recolector de basura
-        for fichero in os.listdir():
-            if self.nombre in fichero:
-                if fichero[-3:] in ['tex','aux','log','out']:
-                    os.remove(fichero)
+        if not debug:
+            #recolector de basura
+            for fichero in os.listdir():
+                if self.nombre in fichero:
+                    if fichero[-3:] in ['tex','aux','log','out']:
+                        os.remove(fichero)
+   
+def demo():
+    doc = Documento('demo')
+    doc.ejercicio('Enteros.orden_operaciones',n=8)
+    doc.problema('Enteros.numeros_recta')
+    doc.ejercicio('Enteros.factorizar',n=4)
+    doc.ejercicio('Enteros.mcd_mcm',n=4)
+    doc.ejercicio('Enteros.mcd_mcm_3',n=2)
+    doc.problema('Enteros.mcd_mcm_inverso')
+    doc.problema('Enteros.Problema_mcm')
+    doc.problema('Enteros.Problema_mcd')
+    doc.cerrar()
+    doc.compilar()
 
 if __name__ == '__main__':
     '''
     doc = Documento('prueba')
     for i in range(1):
-        #doc.problema('Enteros.Problema_mcd')
-        doc.ejercicio('Enteros.factorizar',n=8)
+        doc.problema('Enteros.Problema_recta',debug=True)
+        #doc.ejercicio('Enteros.orden_operaciones',n=8,dificultad=3)
     doc.cerrar()
-    doc.compilar()
+    doc.compilar(debug=True)
     '''
-    Enteros.orden_operaciones(n=8,debug=True,dificultad=3)
-    #print(Enteros.limpiador(['(',6,'x','(',4,'x',3,')',')']))
-    #print(Enteros.limpiador(['(','(',4,'+',3,')','x',6,')']))
+    #print(Enteros.orden_operaciones(n=8,debug=True,dificultad=3))
+    #print(Enteros.simplificar(['(', 6,'+',4,')','*',5]))
+
+    demo()
