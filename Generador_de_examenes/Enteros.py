@@ -136,6 +136,8 @@ seed: semilla para la generación aleatoria
 dificultad: entre 1 y 5
 '''
 def orden_operaciones(n = 1, seed = None, dificultad = 3,debug = False):
+    if seed:
+        random.seed(seed)
     enunciado = 'Simplifica las siguientes expresiones:\n'
     solucion = enunciado
     enunciado += '\\begin{tasks}\n'
@@ -218,7 +220,14 @@ def orden_operaciones(n = 1, seed = None, dificultad = 3,debug = False):
     solucion += '\\end{tasks}'
     return enunciado,solucion,None
 
+'''
+Ejercicio para localizar números sobre una recta
+seed: semilla para la generación aleatoria
+dificultad: entre 1 y 5. Apenas tiene influencia
+'''
 def numeros_recta(n = 1, seed = None, dificultad = 3,debug = False):
+    if seed:
+        random.seed(seed)
     #elegir la separación entre las marcas
     sep = random.randint(2,max(2,dificultad*2-1))
     #elegir el número de marcas que aparecen en la recta
@@ -342,6 +351,49 @@ def factorizar(n = 1, seed = None, dificultad = 3,debug = False):
         solucion += '$.\n'
         if debug:
             print(f'{num} {factores}')
+     
+    enunciado += '\\end{tasks}'
+    solucion += '\\end{tasks}'
+    return enunciado,solucion,generados
+
+def divisibilidad(n = 1, seed = None, dificultad = 3,debug = False):
+    if seed:
+        random.seed(seed)
+    enunciado = 'Completa la cifra de las unidades en cada número para que sea múltiplo de 2 y 3 simultaneamente.\n'
+    solucion = enunciado
+    enunciado += 'Si hay más de una solución, pon todas.\n'
+    enunciado += '\\begin{tasks}(4)\n'
+    solucion += '\\begin{tasks}(2)\n'
+    generados = []
+    apartado = 0
+    while apartado < n:
+        #generar un número de dos cifras
+        num = random.randint(10,99)
+        #comprobar que no se han generado los mismos de antes
+        if num in generados:
+            continue
+        else:
+            generados.append(num)
+            apartado+=1
+
+        #fabricar el enunciado
+        enunciado += f'\\task ${num}\\_$.\n'
+        
+        #fabricar solución
+        solucion += '\\task $'
+        primero = True
+        #las unidades pares hacen el múltiplo de 2
+        for i in [0,2,4,6,8]:
+            #comprobar si el número es múltiplo de 3
+            if (num*10+i)%3 ==0:
+                if primero:
+                    primero = False
+                else:
+                    solucion += '\\text{ y }'
+                solucion += f' {num*10+i}'
+        solucion += '$.\n'
+        if debug:
+            print(f'{num}')
      
     enunciado += '\\end{tasks}'
     solucion += '\\end{tasks}'

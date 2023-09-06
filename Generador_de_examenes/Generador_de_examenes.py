@@ -53,6 +53,7 @@ def demo():
     doc.ejercicio('Enteros.orden_operaciones',n=8)
     doc.problema('Enteros.numeros_recta')
     doc.ejercicio('Enteros.factorizar',n=4)
+    doc.ejercicio('Enteros.divisibilidad',n=4)
     doc.ejercicio('Enteros.mcd_mcm',n=4)
     doc.ejercicio('Enteros.mcd_mcm_3',n=2)
     doc.problema('Enteros.mcd_mcm_inverso')
@@ -62,15 +63,15 @@ def demo():
     doc.compilar()
 
 if __name__ == '__main__':
-    '''
+    
     doc = Documento('prueba')
     for i in range(1):
-        doc.problema('Enteros.Problema_recta',debug=True)
-        #doc.ejercicio('Enteros.orden_operaciones',n=8,dificultad=3)
+        #doc.problema('Enteros.Problema_recta',debug=True)
+        doc.ejercicio('Enteros.divisibilidad',n=8)
     doc.cerrar()
-    doc.compilar(debug=True)
-    '''
+    doc.compilar()
+    
     #print(Enteros.orden_operaciones(n=8,debug=True,dificultad=3))
     #print(Enteros.simplificar(['(', 6,'+',4,')','*',5]))
 
-    demo()
+    #demo()
