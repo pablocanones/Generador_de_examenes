@@ -261,7 +261,7 @@ def numeros_recta(n = 1, seed = None, dificultad = 3,debug = False):
                 f'${datos[5]}-({datos[0]})={datos[5]-datos[0]}$. Entonces, si {posiciones[5]-posiciones[0]} marcas cubren '+\
                 f'una distancia de {datos[5]-datos[0]}, el espacio entre dos marcas mide ${datos[5]-datos[0]}:{posiciones[5]-posiciones[0]} = {sep}$.'
     solucion += '\n\nCon esto podemos sacar el valor de las cuatro letras:\n\\begin{itemize}'
-    for i in range(2,6):
+    for i in range(1,5):
         solucion += f'\n\\item {datos[i]} está a {abs(posiciones[i]-posiciones[5])} marca'
         if abs(posiciones[i]-posiciones[5])>1:
             solucion += 's'
@@ -511,63 +511,65 @@ def divisibilidad_vf(n = 1, seed = None, dificultad = 3,debug = False):
     if seed:
         random.seed(seed)
     enunciado = 'Contesta si las siguientes afirmaciones son verdaderas o falsas. Razona tu respuesta:\n'
-    solucion = enunciado
+    solucion = 'Razonemos si las afirmaciones son verdaderas o falsas:\n'
     enunciado += '\\begin{tasks}\n'
     solucion += '\\begin{tasks}\n'
     
     #las preguntas utilizan divisibilidad entre 2,3,4 y 5
     divisores = [2,3,4,5]
     random.shuffle(divisores)
-    for i in divisores:
-        #tipo de afirmación
-        tipo = random.randint(0,2)
+    #tipo de afirmación
+    tipos = [0,1,2]
+    random.shuffle(tipos)
+    tipos.append(random.randint(0,2))
+    for i in range(4):
         #formulación de la afirmación
         verdadero = random.randint(0,1) == 0
         #múltiplo
-        multip = random.randint(700,2000)*i
+        multip = random.randint(700,2000)*divisores[i]
         #desviación para no tener múltiplo
         if not verdadero:
-            multip += random.randint(1,i-1)
+            multip += random.randint(1,divisores[i]-1)
 
         #fabricar enunciado
-        if tipo == 0:
-            enunciado += f'\\task El número {i} divide a {multip}.\n'
-        elif tipo == 1:
-            enunciado += f'\\task El número {i} es divisor de {multip}.\n'
-        else: #tipo == 2:
-            enunciado += f'\\task El número {multip} es múltiplo de {i}.\n'
+        if tipos[i] == 0:
+            enunciado += f'\\task El número {divisores[i]} divide a {multip}.\n'
+        elif tipos[i] == 1:
+            enunciado += f'\\task El número {divisores[i]} es divisor de {multip}.\n'
+        else: #tipos[i] == 2:
+            enunciado += f'\\task El número {multip} es múltiplo de {divisores[i]}.\n'
             
         def suma_digitos(n):
             suma = 0
-            for i in range(int(math.log10(n))):
-                suma += (n//(i+1))%10
+            for i in range(int(math.log10(n))+1):
+                suma += (n//10**i)%10
             return suma
         
         if verdadero:
-            if i == 2:
-                solucion += '\\task Verdadero. Un número es divisible entre 2 si acaba en 0, 2, 4, 6 u 8. '+\
+            if divisores[i] == 2:
+                solucion += '\\task \\textbf{{Verdadero}}. Un número es divisible entre 2 si acaba en 0, 2, 4, 6 u 8. '+\
                             f'{multip} acaba en {multip%10}, entonces {multip} es múltiplo 2.\n'
-            elif i == 3:
-                solucion += '\\task Verdadero. Un número es divisible entre 3 si la suma de sus cifras es múltiplo de 3. '+\
+            elif divisores[i] == 3:
+                solucion += '\\task \\textbf{{Verdadero}}. Un número es divisible entre 3 si la suma de sus cifras es múltiplo de 3. '+\
                             f'La suma de las cifras de {multip} es {suma_digitos(multip)}, que es múltiplo de 3. Entonces {multip} es múltiplo 3.\n'
-            elif i == 4:
-                solucion += '\\task Verdadero. Un número es divisible entre 4 si sus dos últimas cifras son múltiplo de 4'+\
+            elif divisores[i] == 4:
+                solucion += '\\task \\textbf{{Verdadero}}. Un número es divisible entre 4 si sus dos últimas cifras son múltiplo de 4. '+\
                             f'{multip} acaba en {multip%100}, que es múltiplo de 4. Entonces {multip} es múltiplo 4.\n'
             else: #i == 5:
-                solucion += '\\task Verdadero. Un número es divisible entre 5 si acaba en 0 o 5.'+\
+                solucion += '\\task \\textbf{{Verdadero}}. Un número es divisible entre 5 si acaba en 0 o 5. '+\
                             f'{multip} acaba en {multip%10}, entonces {multip} es múltiplo 5.\n'
         else: #not verdadero:
-            if i == 2:
-                solucion += '\\task Falso. Un número es divisible entre 2 si acaba en 0, 2, 4, 6 u 8. '+\
+            if divisores[i] == 2:
+                solucion += '\\task \\textbf{{Falso}}. Un número es divisible entre 2 si acaba en 0, 2, 4, 6 u 8. '+\
                             f'{multip} acaba en {multip%10}, entonces {multip} no es múltiplo de 2.\n'
-            elif i == 3:
-                solucion += '\\task Falso. Un número es divisible entre 3 si la suma de sus cifras es múltiplo de 3. '+\
+            elif divisores[i] == 3:
+                solucion += '\\task \\textbf{{Falso}}. Un número es divisible entre 3 si la suma de sus cifras es múltiplo de 3. '+\
                             f'La suma de las cifras de {multip} es {suma_digitos(multip)}, que no es múltiplo de 3. Entonces {multip} no es múltiplo de 3.\n'
-            elif i == 4:
-                solucion += '\\task Falso. Un número es divisible entre 4 si sus dos últimas cifras son múltiplo de 4'+\
+            elif divisores[i] == 4:
+                solucion += '\\task \\textbf{{Falso}}. Un número es divisible entre 4 si sus dos últimas cifras son múltiplo de 4. '+\
                             f'{multip} acaba en {multip%100}, que no es múltiplo de 4. Entonces {multip} no es múltiplo de 4.\n'
             else: #i == 5:
-                solucion += '\\task Falso. Un número es divisible entre 5 si acaba en 0 o 5.'+\
+                solucion += '\\task \\textbf{{Falso}}. Un número es divisible entre 5 si acaba en 0 o 5. '+\
                             f'{multip} acaba en {multip%10}, entonces {multip} no es múltiplo de 5.\n'
 
     enunciado += '\\end{tasks}'
