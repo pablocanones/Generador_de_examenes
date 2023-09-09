@@ -348,6 +348,78 @@ def factorizar(n = 1, seed = None, dificultad = 3,debug = False):
     return enunciado,solucion,generados
 
 '''
+ejercicio de pregutas de verdadero o falso sobre divisibilidad
+seed: semilla para la generación aleatoria
+debug: para ver la factorización de los números
+
+'''
+def divisibilidad_vf(n = 1, seed = None, dificultad = 3,debug = False):
+    if seed:
+        random.seed(seed)
+    enunciado = 'Contesta si las siguientes afirmaciones son verdaderas o falsas. Razona tu respuesta:\n'
+    solucion = enunciado
+    enunciado += '\\begin{tasks}\n'
+    solucion += '\\begin{tasks}\n'
+    
+    #las preguntas utilizan divisibilidad entre 2,3,4 y 5
+    divisores = [2,3,4,5]
+    random.shuffle(divisores)
+    for i in divisores:
+        #tipo de afirmación
+        tipo = random.randint(0,2)
+        #formulación de la afirmación
+        verdadero = random.randint(0,1) == 0
+        #múltiplo
+        multip = random.randint(700,2000)*i
+        #desviación para no tener múltiplo
+        if not verdadero:
+            multip += random.randint(1,i-1)
+
+        #fabricar enunciado
+        if tipo == 0:
+            enunciado += f'\\task El número {i} divide a {multip}.\n'
+        elif tipo == 1:
+            enunciado += f'\\task El número {i} es divisor de {multip}.\n'
+        else: #tipo == 2:
+            enunciado += f'\\task El número {multip} es múltiplo de {i}.\n'
+            
+        def suma_digitos(n):
+            suma = 0
+            for i in range(int(math.log10(n))):
+                suma += (n//(i+1))%10
+            return suma
+        
+        if verdadero:
+            if i == 2:
+                solucion += '\\task Verdadero. Un número es divisible entre 2 si acaba en 0, 2, 4, 6 u 8. '+\
+                            f'{multip} acaba en {multip%10}, entonces {multip} es múltiplo 2.\n'
+            elif i == 3:
+                solucion += '\\task Verdadero. Un número es divisible entre 3 si la suma de sus cifras es múltiplo de 3. '+\
+                            f'La suma de las cifras de {multip} es {suma_digitos(multip)}, que es múltiplo de 3. Entonces {multip} es múltiplo 3.\n'
+            elif i == 4:
+                solucion += '\\task Verdadero. Un número es divisible entre 4 si sus dos últimas cifras son múltiplo de 4'+\
+                            f'{multip} acaba en {multip%100}, que es múltiplo de 4. Entonces {multip} es múltiplo 4.\n'
+            else: #i == 5:
+                solucion += '\\task Verdadero. Un número es divisible entre 5 si acaba en 0 o 5.'+\
+                            f'{multip} acaba en {multip%10}, entonces {multip} es múltiplo 5.\n'
+        else: #not verdadero:
+            if i == 2:
+                solucion += '\\task Falso. Un número es divisible entre 2 si acaba en 0, 2, 4, 6 u 8. '+\
+                            f'{multip} acaba en {multip%10}, entonces {multip} no es múltiplo de 2.\n'
+            elif i == 3:
+                solucion += '\\task Falso. Un número es divisible entre 3 si la suma de sus cifras es múltiplo de 3. '+\
+                            f'La suma de las cifras de {multip} es {suma_digitos(multip)}, que no es múltiplo de 3. Entonces {multip} no es múltiplo de 3.\n'
+            elif i == 4:
+                solucion += '\\task Falso. Un número es divisible entre 4 si sus dos últimas cifras son múltiplo de 4'+\
+                            f'{multip} acaba en {multip%100}, que no es múltiplo de 4. Entonces {multip} no es múltiplo de 4.\n'
+            else: #i == 5:
+                solucion += '\\task Falso. Un número es divisible entre 5 si acaba en 0 o 5.'+\
+                            f'{multip} acaba en {multip%10}, entonces {multip} no es múltiplo de 5.\n'
+
+    enunciado += '\\end{tasks}'
+    solucion += '\\end{tasks}'
+    return enunciado,solucion,None
+'''
 ejercicio para calcular el mínimo común múltiplo y el máximo común divisor de 2 números
 n: Cantidad de apartados.
 seed: semilla para la generación aleatoria

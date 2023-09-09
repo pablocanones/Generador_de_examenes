@@ -62,15 +62,15 @@ def demo():
     doc.compilar()
 
 if __name__ == '__main__':
-    '''
+    
     doc = Documento('prueba')
     for i in range(1):
-        doc.problema('Enteros.Problema_recta',debug=True)
-        #doc.ejercicio('Enteros.orden_operaciones',n=8,dificultad=3)
+        #doc.problema('Enteros.Problema_recta',debug=True)
+        doc.ejercicio('Enteros.divisibilidad_vf')
     doc.cerrar()
     doc.compilar(debug=True)
-    '''
+    
     #print(Enteros.orden_operaciones(n=8,debug=True,dificultad=3))
     #print(Enteros.simplificar(['(', 6,'+',4,')','*',5]))
 
-    demo()
+    #demo()
