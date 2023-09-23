@@ -516,13 +516,16 @@ def divisibilidad_vf(n = 1, seed = None, dificultad = 3,debug = False):
     solucion += '\\begin{tasks}\n'
     
     #las preguntas utilizan divisibilidad entre 2,3,4 y 5
-    divisores = [2,3,4,5]
+    divisores = [2,3,4,5,9]
     random.shuffle(divisores)
     #tipo de afirmación
     tipos = [0,1,2]
+    tipos2 = tipos[:]
     random.shuffle(tipos)
-    tipos.append(random.randint(0,2))
-    for i in range(4):
+    random.shuffle(tipos2)
+    #fabricar una lista de 5 tipos, al menos uno de cada
+    tipos.extend(tipos2[:2])
+    for i in range(5):
         #formulación de la afirmación
         verdadero = random.randint(0,1) == 0
         #múltiplo
@@ -555,9 +558,12 @@ def divisibilidad_vf(n = 1, seed = None, dificultad = 3,debug = False):
             elif divisores[i] == 4:
                 solucion += '\\task \\textbf{{Verdadero}}. Un número es divisible entre 4 si sus dos últimas cifras son múltiplo de 4. '+\
                             f'{multip} acaba en {multip%100}, que es múltiplo de 4. Entonces {multip} es múltiplo 4.\n'
-            else: #i == 5:
+            elif divisores[i] == 5:
                 solucion += '\\task \\textbf{{Verdadero}}. Un número es divisible entre 5 si acaba en 0 o 5. '+\
                             f'{multip} acaba en {multip%10}, entonces {multip} es múltiplo 5.\n'
+            else: #divisores[i] == 9
+                solucion += '\\task \\textbf{{Verdadero}}. Un número es divisible entre 9 si la suma de sus cifras es múltiplo de 9. '+\
+                            f'La suma de las cifras de {multip} es {suma_digitos(multip)}, que es múltiplo de 9. Entonces {multip} es múltiplo 9.\n'
         else: #not verdadero:
             if divisores[i] == 2:
                 solucion += '\\task \\textbf{{Falso}}. Un número es divisible entre 2 si acaba en 0, 2, 4, 6 u 8. '+\
@@ -568,13 +574,17 @@ def divisibilidad_vf(n = 1, seed = None, dificultad = 3,debug = False):
             elif divisores[i] == 4:
                 solucion += '\\task \\textbf{{Falso}}. Un número es divisible entre 4 si sus dos últimas cifras son múltiplo de 4. '+\
                             f'{multip} acaba en {multip%100}, que no es múltiplo de 4. Entonces {multip} no es múltiplo de 4.\n'
-            else: #i == 5:
+            elif divisores[i] == 5:
                 solucion += '\\task \\textbf{{Falso}}. Un número es divisible entre 5 si acaba en 0 o 5. '+\
                             f'{multip} acaba en {multip%10}, entonces {multip} no es múltiplo de 5.\n'
-
+            else: #divisores[i] == 9
+                solucion += '\\task \\textbf{{Falso}}. Un número es divisible entre 9 si la suma de sus cifras es múltiplo de 9. '+\
+                            f'La suma de las cifras de {multip} es {suma_digitos(multip)}, que no es múltiplo de 9. Entonces {multip} no es múltiplo de 9.\n'
+            
     enunciado += '\\end{tasks}'
     solucion += '\\end{tasks}'
     return enunciado,solucion,None
+
 '''
 ejercicio para calcular el mínimo común múltiplo y el máximo común divisor de 2 números
 n: Cantidad de apartados.
@@ -921,7 +931,7 @@ def mcd_mcm_3(n = 1, seed = None, dificultad = 3,debug = False):
     return enunciado,solucion,generados
 
 '''
-ejercicio para enconrar un número múltiplo del mcm de tres números
+ejercicio para encontrar un número múltiplo del mcm de tres números
 seed: semilla para la generación aleatoria
 dificultad: entre 1 y 5
 debug: para ver la factorización de los números
@@ -1152,7 +1162,7 @@ def divisor_comun(n = 1, seed = None, dificultad = 3,debug = False):
     cot_sup = lista_div[lista_div.index(num)+1]-1
 
      #fabricar el enunciado
-    enunciado = f'De cierto número desconocido sabemos que es menor o igual que {cot_inf} y mayor o igual que {cot_sup}. '+\
+    enunciado = f'De cierto número desconocido sabemos que es mayor o igual que {cot_inf} y menor o igual que {cot_sup}. '+\
                  f'Además, sabemos que es divisor entre {num1}, {num2} y {num3}. Halla este número.'
     solucion = f'Que sepamos que el número buscado es divisor entre {num1}, {num2} y {num3} nos indica '+\
                 'que es un divisor común a los tres. Seguramente no sea el máximo común divisor pero empecemos por calcularlo.\n\n'+\
@@ -1220,7 +1230,7 @@ def divisor_comun(n = 1, seed = None, dificultad = 3,debug = False):
                 solucion += f' {i}^{k}'
     solucion += f'={math.gcd(num1,num2,num3)}$.\n\\end{{itemize}}\n'
     solucion += f'El número {math.gcd(num1,num2,num3)} está por encima de {cot_sup} '+\
-                f'pero debe haber un divisor suyo menor o igual que {cot_inf} y mayor o igual que {cot_sup}. '+\
+                f'pero debe haber un divisor suyo mayor o igual que {cot_inf} y menor o igual que {cot_sup}. '+\
                 f'Para encontrarlo, vamos a enumerar todos los divisores del máximo común divisor.\n\n'
     #fabricar solución
     solucion += f'$\\begin{{aligned}}[t] {math.gcd(num1,num2,num3)} &='

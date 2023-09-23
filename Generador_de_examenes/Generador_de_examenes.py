@@ -52,6 +52,7 @@ def demo():
     doc = Documento('demo')
     doc.ejercicio('Enteros.orden_operaciones',n=8)
     doc.problema('Enteros.numeros_recta')
+    doc.problema('Enteros.suma_enteros')
     doc.ejercicio('Enteros.factorizar',n=4)
     doc.ejercicio('Enteros.divisores',n=4)
     doc.ejercicio('Enteros.divisibilidad',n=4)

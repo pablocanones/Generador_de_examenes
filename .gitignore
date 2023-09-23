@@ -365,3 +365,4 @@ FodyWeavers.xsd
 *.pdf
 *.tex
 *.aux
+*.gz
