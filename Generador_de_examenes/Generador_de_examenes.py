@@ -1,5 +1,6 @@
 import os
 import Enteros
+import Geometria
 import codecs
 
 class Documento():
@@ -68,15 +69,15 @@ def demo():
     doc.compilar()
 
 if __name__ == '__main__':
-    '''
+    
     doc = Documento('prueba')
-    for i in range(3):
+    for i in range(5):
         #doc.problema('Enteros.Problema_recta',debug=True)
-        doc.ejercicio('Enteros.divisibilidad_vf')
+        doc.ejercicio('Geometria.poligono_geoplano')
     doc.cerrar()
     doc.compilar()
-    '''
+    
     #print(Enteros.orden_operaciones(n=8,debug=True,dificultad=3))
     #print(Enteros.simplificar(['(', 6,'+',4,')','*',5]))
 
-    demo()
+    #demo()

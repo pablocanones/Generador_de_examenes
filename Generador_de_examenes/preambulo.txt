@@ -12,6 +12,8 @@
 \usepackage{tasks}
 \usepackage{tikz} 
 \usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{fillbetween}
 
 \theoremstyle{definition}
 \newtheorem{ejercicio}{}

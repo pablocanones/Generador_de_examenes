@@ -2,7 +2,6 @@ import random
 from operator import mul
 from functools import reduce
 import math
-from copy import deepcopy
 
 def operacion_derecha(expresion,i):
     while i<len(expresion) and expresion[i] not in ['+','-','*',':','(']:
@@ -291,11 +290,10 @@ def suma_enteros(n = 1, seed = None, dificultad = 3,debug = False):
     j = random.randint(74,95)
     enunciado = f'Si la suma de todos los números naturales entre {i} y {j} es {int((i+j)*(j-i+1)/2)}, ¿cuánto vale la suma de '+\
                 f'todos los números naturales entre {i+1} y {j+1}? Piensa una estrategia que te evite sumar todos los números.'
-    solucion = f'Sabemos cuánto vale la suma de todos los números naturales entre {i} y {j}. Si nos planteamos la suma de '+\
-               f'todos los números naturales entre {i+1} y {j+1} es como si cogiésemos la de {i} a {j} y sumásemos 1 a cada número. '+\
-               f'Entonces, el resultado será {int((i+j)*(j-i+1)/2)} más 1 por cada número entre {i} y {j}, contando los dos.\n\n'+\
-               f'La cantidad de números entre {i} y {j} es ${j}-{i}+1={j-i+1}$. Entonces, la suma de todos los números naturales entre {i+1} y {j+1} es '+\
-               f'${int((i+j)*(j-i+1)/2)}+{j-i+1}={int((i+j+2)*(j-i+1)/2)}$.'
+    solucion = f'Sabemos cuánto vale la suma de todos los números naturales entre {i} y {j}. La suma de '+\
+               f'todos los números naturales entre {i+1} y {j+1} es la de {i} a {j} quitando {i} y sumando {j+1}.\n\n'+\
+               f'Esto es '+\
+               f'${int((i+j)*(j-i+1)/2)}-{i}+{j+1}={int((i+j)*(j-i+1)/2)}+{j+1-i}={int((i+j+2)*(j-i+1)/2)}$.'
     return enunciado,solucion,None
 '''
 ejercicio para factorizar un número
